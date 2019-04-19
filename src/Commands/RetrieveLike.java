@@ -1,6 +1,11 @@
 package Commands;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -19,6 +24,7 @@ public class RetrieveLike extends Command {
 	@SuppressWarnings("unused")
 	@Override
     public void execute() {
+
         HashMap < String, Object > props = parameters;
         Channel channel = (Channel) props.get("channel");
         JSONParser parser = new JSONParser();
@@ -52,5 +58,35 @@ public class RetrieveLike extends Command {
 			e.printStackTrace();
 		} 
     }
+	public void updateHashMap() throws IOException {
+		System.out.println("X");
+		File file = new File("src/config");
+		BufferedReader br = new BufferedReader(new FileReader(file)); 
+		  
+		  String st; 
+		  HashMap<String, String> config = new HashMap<String, String>();
+		  while ((st = br.readLine()) != null) {
+			    System.out.println(st); 
+			  String[] array = st.split(",");
+			  config.put(array[0]+array[1],array[2]);
+		  }
+		  System.out.println(config);
+		 br.close(); 
+
+	}
+	public static void updateConfig(String string) 
+{ 
+		try { 
+
+// Open given file in append mode. 
+			BufferedWriter out = new BufferedWriter( 
+					new FileWriter("src/config", true)); 
+			out.write(string); 
+			out.close(); 
+		} 
+		catch (IOException e) { 
+			System.out.println("exception occoured" + e); 
+		} 
+	} 
 
 }
