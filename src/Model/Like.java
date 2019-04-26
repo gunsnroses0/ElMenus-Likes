@@ -32,6 +32,7 @@ import Service.LikeService;
 public class Like {
 	private static final String COLLECTION_NAME = "likes";
 	private static int DbPoolCount = 4;
+	static JSONParser parser = new JSONParser();
 	public static int getDbPoolCount() {
 		return DbPoolCount;
 	}
@@ -42,7 +43,7 @@ public class Like {
 
 	private static MongoCollection<Document> collection = null;
 
-	public static HashMap<String, Object> create(HashMap<String, Object> attributes, String target_id) {
+	public static HashMap<String, Object> create(HashMap<String, Object> attributes, String target_id) throws ParseException {
 		MongoClientOptions.Builder options = MongoClientOptions.builder()
 	            .connectionsPerHost(DbPoolCount);
 		MongoClientURI uri = new MongoClientURI(
@@ -64,8 +65,8 @@ public class Like {
 		
 		collection.insertOne(newlike);
 		mongoClient.close();
-		
-		return attributes;
+		HashMap<String, Object> returnValue = Command.jsonToMap((JSONObject) parser.parse(newlike.toJson()));
+		return returnValue;
 	}
 	public static HashMap<String, Object> delete(String messageId) {
 		MongoClientOptions.Builder options = MongoClientOptions.builder()
