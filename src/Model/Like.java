@@ -32,6 +32,7 @@ import Service.LikeService;
 public class Like {
 	private static final String COLLECTION_NAME = "likes";
 	private static int DbPoolCount = 4;
+	static String host = System.getenv("MONGO_URI");
 	static JSONParser parser = new JSONParser();
 	public static int getDbPoolCount() {
 		return DbPoolCount;
@@ -47,7 +48,7 @@ public class Like {
 		MongoClientOptions.Builder options = MongoClientOptions.builder()
 	            .connectionsPerHost(DbPoolCount);
 		MongoClientURI uri = new MongoClientURI(
-				"mongodb://localhost",options);
+				host,options);
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
 		System.out.println(uri);
@@ -72,7 +73,7 @@ public class Like {
 		MongoClientOptions.Builder options = MongoClientOptions.builder()
 	            .connectionsPerHost(DbPoolCount);
 		MongoClientURI uri = new MongoClientURI(
-				"mongodb://localhost",options);
+				host,options);
 
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
@@ -108,7 +109,7 @@ public class Like {
 		MongoClientOptions.Builder options = MongoClientOptions.builder()
 	            .connectionsPerHost(DbPoolCount);
 		MongoClientURI uri = new MongoClientURI(
-				"mongodb://localhost",options);
+				host,options);
 
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
