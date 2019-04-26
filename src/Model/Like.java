@@ -26,9 +26,11 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 
 import Commands.Command;
+import Service.LikeService;
 
 public class Like {
 	private static final String COLLECTION_NAME = "likes";
+	static Like instance = new Like();
 
 	private static MongoCollection<Document> collection = null;
 	private static final MongoClientURI uri = new MongoClientURI(
@@ -37,6 +39,8 @@ public class Like {
 
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
+		System.out.println(uri);
+
 
 		// Retrieving a collection
 		MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
@@ -124,5 +128,7 @@ public class Like {
 		mongoClient.close();
         return likes;
 	}
+	
+	  
 	
 }

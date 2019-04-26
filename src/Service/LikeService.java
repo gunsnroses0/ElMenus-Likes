@@ -1,3 +1,4 @@
+package Service;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -28,23 +29,36 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import Commands.Command;
+import Model.Like;
 import Commands.*;
-public class LikeService {
-	private static final String RPC_QUEUE_NAME = "like-request";
+public class LikeService  {
+	private static String RPC_QUEUE_NAME = "like-request";
+	public static String getRPC_QUEUE_NAME() {
+		return RPC_QUEUE_NAME;
+	}
+
+	public static void setRPC_QUEUE_NAME(String rPC_QUEUE_NAME) {
+		System.out.println("RENAMING");
+		RPC_QUEUE_NAME = rPC_QUEUE_NAME;
+	}
 	public static  MongoDatabase database;
 	public static HashMap<String, String> config;
+	
 	public static void main(String[] argv) {
+		run();
+	}
+	public static void run() {
 		try {
 			updateHashMap();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		MongoClientURI uri = new MongoClientURI(
-				"mongodb://localhost");
-
-		MongoClient mongoClient = new MongoClient(uri);
-		database = mongoClient.getDatabase("El-Menus");
+//		MongoClientURI uri = new MongoClientURI(
+//				"mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/El-Menus?");
+//
+//		MongoClient mongoClient = new MongoClient(uri);
+//		database = mongoClient.getDatabase("El-Menus");
 		// initialize thread pool of fixed size
 		final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 
@@ -102,6 +116,9 @@ public class LikeService {
 
 						cmd.init(props);
 						executor.submit(cmd);
+						
+
+
 					} catch (RuntimeException e) {
 						System.out.println(" [.] " + e.toString());
 					} catch (ParseException e) {
@@ -156,5 +173,7 @@ public class LikeService {
 		 br.close(); 
 
 	}
+
+
 
 }
