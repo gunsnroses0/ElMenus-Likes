@@ -46,7 +46,7 @@ public class LikeService {
 
 	public static MongoDatabase database;
 	public static HashMap<String, String> config;
-	static int threadPoolCount=4;
+	private static int threadPoolCount=4;
 
 	public static void main(String[] argv) {
 		run();
