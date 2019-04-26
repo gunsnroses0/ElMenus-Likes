@@ -2,7 +2,10 @@ POST,/like/id,CreateLike
 GET,/like/id,RetreiveLike
 GET,/like,RetrieveLikes
 POST,/like/addCommand/,AddCommand
+POST,/like/updateCommand/,UpdateCommand
 POST,/like/deleteCommand/,DeleteCommand
+POST,/like/updateThreadPoolCount/,UpdateThreadPoolCount
+POST,/like/updateDBPoolCount/,UpdateDBPoolCount
 GET,/like/freeze/,FreezeQueue
 GET,/like/resume/,ResumeQueue
 POST,/like,Test

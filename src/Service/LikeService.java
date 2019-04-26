@@ -1,4 +1,5 @@
 package Service;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,7 +20,6 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -31,8 +31,10 @@ import com.rabbitmq.client.Envelope;
 import Commands.Command;
 import Model.Like;
 import Commands.*;
-public class LikeService  {
+
+public class LikeService {
 	private static String RPC_QUEUE_NAME = "like-request";
+
 	public static String getRPC_QUEUE_NAME() {
 		return RPC_QUEUE_NAME;
 	}
@@ -41,12 +43,15 @@ public class LikeService  {
 		System.out.println("RENAMING");
 		RPC_QUEUE_NAME = rPC_QUEUE_NAME;
 	}
-	public static  MongoDatabase database;
+
+	public static MongoDatabase database;
 	public static HashMap<String, String> config;
-	
+	static int threadPoolCount=4;
+
 	public static void main(String[] argv) {
 		run();
 	}
+
 	public static void run() {
 		try {
 			updateHashMap();
@@ -60,7 +65,7 @@ public class LikeService  {
 //		MongoClient mongoClient = new MongoClient(uri);
 //		database = mongoClient.getDatabase("El-Menus");
 		// initialize thread pool of fixed size
-		final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+		final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolCount);
 
 		ConnectionFactory factory = new ConnectionFactory();
 		String host = System.getenv("RABBIT_MQ_SERVICE_HOST");
@@ -69,7 +74,7 @@ public class LikeService  {
 		try {
 			connection = factory.newConnection();
 			final Channel channel = connection.createChannel();
-			
+
 			channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
 
 			System.out.println(" [x] Awaiting RPC requests");
@@ -83,29 +88,30 @@ public class LikeService  {
 					System.out.println("Responding to corrID: " + properties.getCorrelationId());
 
 					try {
-						
+
 						String message = new String(body, "UTF-8");
 						JSONParser parser = new JSONParser();
 						JSONObject messageBody = (JSONObject) parser.parse(message);
 //						String service = StringUtils.substringsBetween((String) messageBody.get("uri"), "/", "/");
-						String [] URI = ((String) messageBody.get("uri")).split(Pattern.quote("/"));
-						String service= "";
-						for (int i =0; i<URI.length;i++) {
-							if (!(StringUtils.containsAny(URI[i],  new char []{'0','1','2','3','4','5','6','7','8','9'}))) {
-								service += URI[i]+"/";
-							}else {
+						String[] URI = ((String) messageBody.get("uri")).split(Pattern.quote("/"));
+						String service = "";
+						for (int i = 0; i < URI.length; i++) {
+							if (!(StringUtils.containsAny(URI[i],
+									new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }))) {
+								service += URI[i] + "/";
+							} else {
 								service += "id";
 
 							}
 						}
 //						System.out.println((String) messageBody.get("uri"));
 //						StringUtils.containsAny(str, searchChars)
-						System.out.println("URI"+ URI[0]);
-						String key = (String) messageBody.get("request_method")+ service;
-						System.out.println("KEY"+ key );
-						System.out.println("config"+config.get(key));
-						String command = (String)config.get(key);
-						Command cmd = (Command) Class.forName("Commands."+command).newInstance();
+						System.out.println("URI" + URI[0]);
+						String key = (String) messageBody.get("request_method") + service;
+						System.out.println("KEY" + key);
+						System.out.println("config" + config.get(key));
+						String command = (String) config.get(key);
+						Command cmd = (Command) Class.forName("Commands." + command).newInstance();
 						System.out.println(cmd);
 						HashMap<String, Object> props = new HashMap<String, Object>();
 						props.put("channel", channel);
@@ -116,8 +122,6 @@ public class LikeService  {
 
 						cmd.init(props);
 						executor.submit(cmd);
-						
-
 
 					} catch (RuntimeException e) {
 						System.out.println(" [.] " + e.toString());
@@ -147,33 +151,41 @@ public class LikeService  {
 
 	}
 
+	public static int getThreadPoolCount() {
+		return threadPoolCount;
+	}
+
+	public static void setThreadPoolCount(int threadPoolCount) {
+		LikeService.threadPoolCount = threadPoolCount;
+	}
+
 	public static String getCommand(String message) throws ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject messageJson = (JSONObject) parser.parse(message);
 		String result = messageJson.get("command").toString();
 		return result;
 	}
+
 	public static MongoDatabase getDb() {
 		return database;
 	}
+
 	public static void updateHashMap() throws IOException {
 		config = new HashMap<String, String>();
 		System.out.println("X");
 		File file = new File("src/config");
-		BufferedReader br = new BufferedReader(new FileReader(file)); 
-		  
-		  String st; 
+		BufferedReader br = new BufferedReader(new FileReader(file));
 
-		  while ((st = br.readLine()) != null) {
-			    System.out.println(st); 
-			  String[] array = st.split(",");
-			  config.put(array[0]+array[1],array[2]);
-		  }
-		  System.out.println(config);
-		 br.close(); 
+		String st;
+
+		while ((st = br.readLine()) != null) {
+			System.out.println(st);
+			String[] array = st.split(",");
+			config.put(array[0] + array[1], array[2]);
+		}
+		System.out.println(config);
+		br.close();
 
 	}
-
-
 
 }

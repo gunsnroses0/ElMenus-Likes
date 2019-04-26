@@ -19,6 +19,7 @@ import org.bson.types.ObjectId;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -30,13 +31,22 @@ import Service.LikeService;
 
 public class Like {
 	private static final String COLLECTION_NAME = "likes";
+	private static int DbPoolCount = 4;
+	public static int getDbPoolCount() {
+		return DbPoolCount;
+	}
+	public static void setDbPoolCount(int dbPoolCount) {
+		DbPoolCount = dbPoolCount;
+	}
 	static Like instance = new Like();
 
 	private static MongoCollection<Document> collection = null;
-	private static final MongoClientURI uri = new MongoClientURI(
-			"mongodb://localhost");
-	public static HashMap<String, Object> create(HashMap<String, Object> attributes, String target_id) {
 
+	public static HashMap<String, Object> create(HashMap<String, Object> attributes, String target_id) {
+		MongoClientOptions.Builder options = MongoClientOptions.builder()
+	            .connectionsPerHost(DbPoolCount);
+		MongoClientURI uri = new MongoClientURI(
+				"mongodb://localhost",options);
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
 		System.out.println(uri);
@@ -58,8 +68,10 @@ public class Like {
 		return attributes;
 	}
 	public static HashMap<String, Object> delete(String messageId) {
+		MongoClientOptions.Builder options = MongoClientOptions.builder()
+	            .connectionsPerHost(DbPoolCount);
 		MongoClientURI uri = new MongoClientURI(
-				"mongodb://localhost");
+				"mongodb://localhost",options);
 
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
@@ -92,8 +104,10 @@ public class Like {
 		return message;
 	}
 	public static ArrayList<HashMap<String, Object>> get(String messageId) {
+		MongoClientOptions.Builder options = MongoClientOptions.builder()
+	            .connectionsPerHost(DbPoolCount);
 		MongoClientURI uri = new MongoClientURI(
-				"mongodb://localhost");
+				"mongodb://localhost",options);
 
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoDatabase database = mongoClient.getDatabase("El-Menus");
