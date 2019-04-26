@@ -45,7 +45,7 @@ public class AddCommand extends Command {
 					File file = new File("src/Commands/" + fileName);
 					file.createNewFile();
 					
-					writeFile(fileContent,"src/Commands"+ fileName);
+					writeFile(fileContent,"src/Commands/"+ fileName);
 					
 					
 					AMQP.BasicProperties properties = (AMQP.BasicProperties) props.get("properties");
