@@ -74,7 +74,7 @@ public class Like {
 		newlike.append("target_id", new ObjectId(target_id));
 		
 		collection.insertOne(newlike);
-		mongoClient.close();
+
 		HashMap<String, Object> returnValue = Command.jsonToMap((JSONObject) parser.parse(newlike.toJson()));
 		return returnValue;
 	}
@@ -140,7 +140,6 @@ public class Like {
 			}
 		}
 
-		mongoClient.close();
         return likes;
 	}
 	
