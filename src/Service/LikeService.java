@@ -51,6 +51,7 @@ public class LikeService {
 	public static void main(String[] argv) {
 		run();
 		ServiceController.run();
+		Like.initializeDb();
 	}
 
 	public static void run() {
